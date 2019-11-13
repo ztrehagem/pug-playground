@@ -1,3 +1,5 @@
+include ../components/foo-component
+
 <!DOCTYPE html>
 html(lang="en")
   head
@@ -6,9 +8,11 @@ html(lang="en")
     meta(http-equiv="X-UA-Compatible", content="ie=edge")
     title Document
   body
-    //- block body
     .page-index
       p this is body hoge
+
+    +foo-component
+      .page-index__slotted slotted
 
     //- style
       :scoped:scss
