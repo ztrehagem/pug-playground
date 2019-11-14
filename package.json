@@ -12,7 +12,8 @@
   "dependencies": {
     "del": "^5.1.0",
     "glob": "^7.1.6",
-    "pug": "^2.0.4"
+    "pug": "^2.0.4",
+    "pug-walk": "^1.1.8"
   },
   "devDependencies": {
     "pug-cli": "^1.0.0-alpha6"

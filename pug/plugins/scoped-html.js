@@ -1,5 +1,5 @@
-// const { inspect } = require('util')
 const crypt = require('crypto')
+const walk = require('pug-walk')
 
 const ignoreTags = [
   'html',
@@ -12,33 +12,53 @@ const ignoreTags = [
   'script',
 ]
 
-function canBeScoped (node, options) {
-  return options.src && (
-    (node.type === 'Tag' && !ignoreTags.includes(node.name)) ||
-    (node.type === 'Mixin' && node.call)
-  )
+const inspect = (obj) => require('util').inspect(obj, { depth: null })
+
+const genScope = (src) => crypt.createHash('md5').update(src).digest('hex').slice(0, 8)
+
+const noteScope = (pugOpts) => {
+  const scope = genScope(pugOpts.src)
+  return (node, replace) => {
+    switch (node.type) {
+      case 'Tag':
+        if (ignoreTags.includes(node.name)) break
+        replace({ ...node, scope })
+        break
+
+      case 'Mixin':
+        if (!node.call) break
+        replace({ ...node, scope })
+        break
+    }
+  }
 }
 
-function visitNode (node, options) {
-  if (canBeScoped(node, options)) {
-    const digest = crypt.createHash('md5').update(options.src).digest('hex')
-    node.attrs.push({
-      name: `data-scope-${digest.slice(0, 8)}`,
+const pushScopeAttr = (pugOpts) => (node, replace) => {
+  if (node.scope) {
+    const attrs = [...node.attrs, {
+      name: `data-scope-${node.scope}`,
       val: '""',
       mustEscape: false,
-    })
+    }]
+    replace({ ...node, attrs })
   }
-  const nodes = (node.block || {}).nodes || []
-  nodes.forEach(node => visitNode(node, options))
 }
 
-function scopedHtml (parsed, options) {
-  if (parsed.type === 'Block') {
-    (parsed.nodes || []).forEach(node => visitNode(node, options))
-  } else {
-    visitNode(parsed, options)
-  }
-  return parsed
-}
+module.exports = ({ verbose = false } = {}) => ({
+  postParse (ast, pugOpts) {
+    walk(ast, noteScope(pugOpts))
+    // if (verbose) console.log(inspect(ast))
+    return ast
+  },
 
-exports.postParse = scopedHtml
+  preCodeGen (ast, pugOpts) {
+    walk(ast, pushScopeAttr(pugOpts))
+    if (verbose) console.log(inspect(ast))
+    return ast
+  },
+
+  postCodeGen (js, pugOpts) {
+    if (verbose) console.log(inspect(js))
+    return js
+  },
+})
