@@ -1,4 +1,5 @@
 include ../components/foo-component
+//- include ../components/bar-component
 
 <!DOCTYPE html>
 html(lang="en")
@@ -11,8 +12,11 @@ html(lang="en")
     .page-index
       p this is body hoge
 
-    +foo-component
-      .page-index__slotted slotted
+      +foo-component.page-index__foo
+        .page-index__slotted slotted-foo
+
+    //- +bar-component.page-index__bar
+    //-   .page-index__slotted slotted-bar
 
     //- style
       :scoped:scss

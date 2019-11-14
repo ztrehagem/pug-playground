@@ -47,7 +47,7 @@ const pushScopeAttr = (pugOpts) => (node, replace) => {
 module.exports = ({ verbose = false } = {}) => ({
   postParse (ast, pugOpts) {
     walk(ast, noteScope(pugOpts))
-    // if (verbose) console.log(inspect(ast))
+    if (verbose) console.log(inspect(ast))
     return ast
   },
 
@@ -55,10 +55,5 @@ module.exports = ({ verbose = false } = {}) => ({
     walk(ast, pushScopeAttr(pugOpts))
     if (verbose) console.log(inspect(ast))
     return ast
-  },
-
-  postCodeGen (js, pugOpts) {
-    if (verbose) console.log(inspect(js))
-    return js
   },
 })

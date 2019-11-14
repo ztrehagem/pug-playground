@@ -5,6 +5,7 @@ const glob = require('glob')
 const del = require('del')
 
 const scopedHtml = require('./pug/plugins/scoped-html')
+const component = require('./pug/plugins/component')
 
 const srcDir = path.resolve(__dirname, './src/pages')
 const outDir = path.resolve(__dirname, './dist')
@@ -18,7 +19,8 @@ globed.forEach((filePath) => {
   const outFilePath = path.resolve(outDir, filePath).replace(/\.pug$/, '.html')
   const render = pug.compileFile(srcFilePath, {
     plugins: [
-      scopedHtml({ verbose: true }),
+      component({ verbose: true }),
+      scopedHtml({ verbose: false }),
     ],
   })
   const html = render()
