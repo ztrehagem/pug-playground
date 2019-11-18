@@ -37,10 +37,52 @@ const pushScopeAttr = (pugOpts) => (node, replace) => {
   if (node.scope) {
     const attrs = [...node.attrs, {
       name: `data-scope-${node.scope}`,
-      val: '""',
+      val: '"self"',
       mustEscape: false,
     }]
     replace({ ...node, attrs })
+  }
+}
+
+function pushMixinAttrBlockToTag (node) {
+  return {
+    ...node,
+    attributeBlocks: [
+      ...node.attributeBlocks,
+      {
+        type: 'AttributeBlock',
+        val: 'Object.keys(attributes).filter(key => key.startsWith("data-scope-")).reduce((attrs, key) => Object.assign(attrs, { [key]: "child" }), {})',
+        line: node.line,
+        column: node.column,
+        filename: node.filename,
+      },
+      {
+        type: 'AttributeBlock',
+        val: '{ class: attributes.class }',
+        line: node.line,
+        column: node.column,
+        filename: node.filename,
+      }
+    ]
+  }
+}
+
+function searchRootTags (node, found) {
+  switch (node.type) {
+    case 'Tag':
+      return found(node)
+    case 'Mixin':
+      return node.call ? found(node) : node
+    case 'Conditional':
+      return { ...node, consequent: searchRootTags(node.consequent, found), alternate: node.alternate ? searchRootTags(node.alternate, found) : undefined }
+    default:
+      return node.nodes ? { ...node, nodes: node.nodes.map(node => searchRootTags(node, found)) } : node
+  }
+}
+
+const pushMixinAttrBlock = (pugOpts) => (node, replace) => {
+  if (node.type === 'Mixin' && !node.call) {
+    replace({ ...node, block: searchRootTags(node.block, pushMixinAttrBlockToTag) })
   }
 }
 
@@ -53,6 +95,8 @@ module.exports = ({ verbose = false } = {}) => ({
 
   preCodeGen (ast, pugOpts) {
     walk(ast, pushScopeAttr(pugOpts))
+    if (verbose) console.log(inspect(ast))
+    walk(ast, pushMixinAttrBlock(pugOpts))
     if (verbose) console.log(inspect(ast))
     return ast
   },

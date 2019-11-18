@@ -1,0 +1,10 @@
+include ./baz-inner
+
+mixin baz-component
+  mixin baz-closure
+    p baz-closure
+  .baz-component
+    p this is baz-component
+    +baz-inner
+      p baz-inner-slotted
+    block

@@ -1,4 +1,9 @@
-component bar-component(bar)
-  .bar-component.-bar
-    p this is bar-component
-    block
+mixin bar-component(bar)
+  if bar
+    .bar-component.-bar
+      p this is bar-component with bar
+      block
+  else
+    .bar-component
+      p this is bar-component
+      block

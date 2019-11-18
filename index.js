@@ -19,7 +19,7 @@ globed.forEach((filePath) => {
   const outFilePath = path.resolve(outDir, filePath).replace(/\.pug$/, '.html')
   const render = pug.compileFile(srcFilePath, {
     plugins: [
-      component({ verbose: true }),
+      // component({ verbose: true }),
       scopedHtml({ verbose: false }),
     ],
   })

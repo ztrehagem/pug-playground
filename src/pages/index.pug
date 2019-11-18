@@ -1,5 +1,6 @@
 include ../components/foo-component
-//- include ../components/bar-component
+include ../components/bar-component
+include ../components/baz-component
 
 <!DOCTYPE html>
 html(lang="en")
@@ -15,8 +16,11 @@ html(lang="en")
       +foo-component.page-index__foo
         .page-index__slotted slotted-foo
 
-    //- +bar-component.page-index__bar
-    //-   .page-index__slotted slotted-bar
+      +bar-component(true).page-index__bar
+        .page-index__slotted slotted-bar
+
+      +baz-component.page-index__baz
+        +baz-closure
 
     //- style
       :scoped:scss
