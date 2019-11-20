@@ -29,6 +29,15 @@ const noteScope = (pugOpts) => {
         if (!node.call) break
         replace({ ...node, scope })
         break
+
+      case 'Filter':
+        if (node.name !== 'scoped-css') break
+        replace({ ...node, attrs: [...node.attrs, {
+          name: 'scope',
+          val: `'${scope}'`,
+          mustEscape: false,
+        }]})
+        break
     }
   }
 }

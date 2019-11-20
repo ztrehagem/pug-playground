@@ -5,6 +5,7 @@ const glob = require('glob')
 const del = require('del')
 
 const scopedHtml = require('./pug/plugins/scoped-html')
+const scopedCss = require('./pug/filters/scoped-css')
 const component = require('./pug/plugins/component')
 
 const srcDir = path.resolve(__dirname, './src/pages')
@@ -22,6 +23,9 @@ globed.forEach((filePath) => {
       // component({ verbose: true }),
       scopedHtml({ verbose: false }),
     ],
+    filters: {
+      'scoped-css': scopedCss,
+    },
   })
   const html = render()
   fs.writeFileSync(outFilePath, html)
