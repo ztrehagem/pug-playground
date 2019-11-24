@@ -21,10 +21,10 @@ globed.forEach((filePath) => {
   const render = pug.compileFile(srcFilePath, {
     plugins: [
       // component({ verbose: true }),
-      scopedHtml({ verbose: false }),
+      scopedHtml({ verbose: true }),
     ],
     filters: {
-      'scoped-css': scopedCss,
+      // 'scoped-css': scopedCss,
     },
   })
   const html = render()
